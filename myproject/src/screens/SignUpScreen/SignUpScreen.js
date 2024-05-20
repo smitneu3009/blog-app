@@ -1,30 +1,44 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton";
-import SocialSignInButtons from "../../components/SocialSignInButtons/SocialSignInButtons";
 import { useNavigation } from "@react-navigation/native";
+import axios from 'axios';
 
 const SignUpScreen = () => {
-  const [name, setName]  = useState("");
-  const [ username, setUsername]  = useState("");
-  const  [password, setPassword]  = useState("");
-  
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
 
-  const onRegisterPressed = () => {
-    navigation.navigate('ConfirmEmail')
+  const handleSubmit = async () => {
+    console.log("handleSubmit called");
+    try {
+      setLoading(true);
+      if (!name || !username || !password) {
+        Alert.alert("Please Fill All Fields");
+        setLoading(false);
+        return;
+      }
+      const response = await axios.post("http://10.0.0.35:8080/api/v1/auth/register", {
+        name,
+        username,
+        password,
+      });
+      Alert.alert("Success", response.data.message);
+    } catch (error) {
+      if (error.response) {
+        Alert.alert("Error", error.response.data.message || "Something went wrong!");
+      } else {
+        Alert.alert("Error", "Network error or server is not reachable");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-  const onSignInPressed = () => {
-    navigation.navigate('SignIn')
-  };
-  const onTermsOfUsePressed = () => {
-    console.warn("");
-  };
-  const onPrivacyPressed = () => {
-    console.warn("");
-  };
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.root}>
@@ -41,15 +55,15 @@ const SignUpScreen = () => {
           setValue={setPassword}
           secureTextEntry={true}
         />
-        <CustomButton text="Register" onPress={onRegisterPressed} />
+        <CustomButton text="Register" loading={loading} onPress={handleSubmit} />
         <Text style={styles.text}>
-          By registereing, you confirm that you accept our{' '} <Text style={styles.link} onPress={onTermsOfUsePressed}>Terms of Use</Text> and{' '}
-          <Text style={styles.link} onPress={onPrivacyPressed}>Privacy Policy</Text>
+          By registering, you confirm that you accept our{' '}
+          <Text style={styles.link}>Terms of Use</Text> and{' '}
+          <Text style={styles.link}>Privacy Policy</Text>
         </Text>
-        
         <CustomButton
           text="Have an account? Sign in"
-          onPress={onSignInPressed}
+          onPress={() => navigation.navigate("SignIn")}
           type="TERTIARY"
         />
       </View>
@@ -69,11 +83,11 @@ const styles = StyleSheet.create({
     color: "#051C60",
     margin: 10,
   },
-  text:{
-    color:'gray',
-    marginVertical:11,
+  text: {
+    color: 'gray',
+    marginVertical: 11,
   },
-  link:{
+  link: {
     color: '#FDB075'
   }
 });
