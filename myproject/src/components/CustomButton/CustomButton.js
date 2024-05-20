@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import React from "react";
 
 const CustomButton = ({
@@ -7,15 +7,28 @@ const CustomButton = ({
   type = "PRIMARY",
   bgColor,
   fgColor,
+  loading = false,  // New loading prop
 }) => {
   return (
     <Pressable
-      onPress={onPress}
-      style={[styles.container, styles[`container_${type}`],
-      bgColor ? {backgroundColor:bgColor} : {}
-    ]}
+      onPress={!loading ? onPress : null}  // Disable onPress if loading
+      style={[
+        styles.container,
+        styles[`container_${type}`],
+        bgColor ? { backgroundColor: bgColor } : {}
+      ]}
     >
-      <Text style={[styles.text, styles[`text_${type}`],fgColor ? {color:fgColor} : {}]}>{text}</Text>
+      {loading ? (
+        <ActivityIndicator color={fgColor || 'white'} />  // Show loading indicator
+      ) : (
+        <Text style={[
+          styles.text,
+          styles[`text_${type}`],
+          fgColor ? { color: fgColor } : {}
+        ]}>
+          {text}
+        </Text>
+      )}
     </Pressable>
   );
 };
@@ -31,9 +44,9 @@ const styles = StyleSheet.create({
   container_PRIMARY: {
     backgroundColor: "black",
   },
-  container_SECONDARY:{
-    borderColor:'black',
-    borderWidth:2,
+  container_SECONDARY: {
+    borderColor: 'black',
+    borderWidth: 2,
   },
   container_TERTIARY: {},
   text: {
