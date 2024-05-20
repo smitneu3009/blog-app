@@ -14,8 +14,8 @@ import SocialSignInButtons from "../../components/SocialSignInButtons";
 import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
-  const { username, setUsername } = useState("");
-  const { password, setPassword } = useState("");
+  const [ username, setUsername]  = useState("");
+  const [password, setPassword ] = useState("");
 
   const { height } = useWindowDimensions();
   const navigation = useNavigation();
@@ -51,12 +51,11 @@ const SignInScreen = () => {
         secureTextEntry={true}
       />
       <CustomButton text="Sign In" onPress={onSignInPressed} />
-      <CustomButton
+      {/* <CustomButton
         text="Forgot Password"
         onPress={onForgotPasswordPressed}
         type="TERTIARY"
-      />
-      <SocialSignInButtons/>
+      /> */}
       <CustomButton
         text="Don't have an account? Create One"
         onPress={onSignupPressed}

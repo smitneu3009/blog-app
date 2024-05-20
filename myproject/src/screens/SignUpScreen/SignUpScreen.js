@@ -6,10 +6,10 @@ import SocialSignInButtons from "../../components/SocialSignInButtons/SocialSign
 import { useNavigation } from "@react-navigation/native";
 
 const SignUpScreen = () => {
-  const { username, setUsername } = useState("");
-  const { email, setEmail } = useState("");
-  const { password, setPassword } = useState("");
-  const { passwordRepeat, setPasswordRepeat } = useState("");
+  const [name, setName]  = useState("");
+  const [ username, setUsername]  = useState("");
+  const  [password, setPassword]  = useState("");
+  
 
   const navigation = useNavigation();
 
@@ -30,21 +30,15 @@ const SignUpScreen = () => {
       <View style={styles.root}>
         <Text style={styles.title}>Create an account</Text>
         <CustomInput
-          placeholder="Username"
-          value={username}
-          setValue={setUsername}
+          placeholder="Name"
+          value={name}
+          setValue={setName}
         />
-        <CustomInput placeholder="Email" value={email} setValue={setEmail} />
+        <CustomInput placeholder="Username" value={username} setValue={setUsername} />
         <CustomInput
           placeholder="Password"
           value={password}
           setValue={setPassword}
-          secureTextEntry={true}
-        />
-        <CustomInput
-          placeholder="Repeat Password"
-          value={passwordRepeat}
-          setValue={setPasswordRepeat}
           secureTextEntry={true}
         />
         <CustomButton text="Register" onPress={onRegisterPressed} />
@@ -53,7 +47,6 @@ const SignUpScreen = () => {
           <Text style={styles.link} onPress={onPrivacyPressed}>Privacy Policy</Text>
         </Text>
         
-        <SocialSignInButtons/>
         <CustomButton
           text="Have an account? Sign in"
           onPress={onSignInPressed}
