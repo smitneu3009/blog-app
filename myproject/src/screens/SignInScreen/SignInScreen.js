@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { View, Text, Image, StyleSheet, useWindowDimensions, ScrollView, Alert } from "react-native";
+import { AuthContext } from "../../../context/authContext";
 import Logo from "../../../assets/images/SafeHaven (2).png";
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
 
 const SignInScreen = () => {
+
+  const [state,setState] = useContext(AuthContext);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,14 +30,14 @@ const SignInScreen = () => {
 
       console.log("Making API call with: ", { username, password });
 
-      const response = await axios.post("http://10.0.0.35:8080/api/v1/auth/login", {
+      const response = await axios.post("/auth/login", {
         username,
         password,
       });
-
-      console.log("API call successful: ", response.data);
-
+      setState(response.data);
+      await AsyncStorage.setItem("@auth", JSON.stringify(response.data));
       Alert.alert("Success", response.data.message);
+      navigation.navigate("Home");
       // Uncomment the line below if you want to navigate to the home screen after successful login
       // navigation.navigate("Home");
     } catch (error) {
@@ -46,6 +51,14 @@ const SignInScreen = () => {
       setLoading(false);
     }
   };
+
+  //
+  const getLocalStorageData = async() => {
+    let data =await AsyncStorage.getItem("@auth");
+    console.log("Data from Local Storage: ", data);
+
+  }
+  getLocalStorageData();
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -86,7 +99,6 @@ const styles = StyleSheet.create({
   root: {
     alignItems: "center",
     padding: 20,
-    marginTop: 35,
   },
   logo: {
     width: "70%",
