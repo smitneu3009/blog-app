@@ -2,26 +2,53 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const FooterMenu = () => {
+const FooterMenu = ({ state, descriptors, navigation }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
-        <FontAwesome name="home" style={styles.iconStyle} />
-        <Text>Home</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-      <FontAwesome name="plus-square" style={styles.iconStyle} />
-        <Text>Post</Text>
-      </TouchableOpacity>
-      {/* <TouchableOpacity style={styles.button}>
-      <FontAwesome name="info-circle" style={styles.iconStyle} />
-        <Text>About</Text>
-      </TouchableOpacity> */}
-      <TouchableOpacity style={styles.button}>
-      <FontAwesome name="user" style={styles.iconStyle} />
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
 
-        <Text>Account</Text>
-      </TouchableOpacity>
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        const onLongPress = () => {
+          navigation.emit({
+            type: 'tabLongPress',
+            target: route.key,
+          });
+        };
+
+        const iconName = route.name === 'Home' ? 'home' : route.name === 'Post' ? 'plus-square' : 'user';
+
+        return (
+          <TouchableOpacity
+            key={index}
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            onLongPress={onLongPress}
+            style={styles.button}
+          >
+            <View style={styles.iconContainer}>
+              <FontAwesome name={iconName} style={[styles.iconStyle, isFocused ? styles.iconActive : styles.iconInactive]} />
+              <Text style={[styles.textStyle, isFocused ? styles.textActive : styles.textInactive]}>{label}</Text>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
@@ -29,18 +56,36 @@ const FooterMenu = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    margin: 10,
-    justifyContent: 'space-between',
-    marginLeft:39,
-    marginRight:30,
+    justifyContent: 'space-around',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)', 
+    paddingVertical: 10,
+    paddingTop: 16,
   },
   button: {
     alignItems: 'center',
   },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: 24, // Adjust marginBottom as needed
+  },
   iconStyle: {
-    fontSize: 21,
-    color: 'black',
-    marginBottom: 3,
+    fontSize: 23,
+    marginBottom:5,
+  },
+  iconActive: {
+    color: 'white',
+  },
+  iconInactive: {
+    color: 'gray',
+  },
+  textStyle: {
+    fontSize: 11,
+  },
+  textActive: {
+    color: 'white',
+  },
+  textInactive: {
+    color: 'gray',
   },
 });
 
