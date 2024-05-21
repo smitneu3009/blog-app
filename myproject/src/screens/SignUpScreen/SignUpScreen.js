@@ -22,12 +22,13 @@ const SignUpScreen = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.post("http://10.0.0.35:8080/api/v1/auth/register", {
+      const response = await axios.post("/auth/register", {
         name,
         username,
         password,
       });
       Alert.alert("Success", response.data.message);
+      navigation.navigate("SignIn");
     } catch (error) {
       if (error.response) {
         Alert.alert("Error", error.response.data.message || "Something went wrong!");

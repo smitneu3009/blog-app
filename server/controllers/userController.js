@@ -37,7 +37,7 @@ const userController =async (req,res) =>{
 
         res.status(200).json({
             success: true,
-            message: "User Registered Successfully Plase Login to continue"
+            message: "User Registered Successfully Please Login to continue"
         })
 
     } catch (error) {
