@@ -8,6 +8,7 @@ const CustomButton = ({
   bgColor,
   fgColor,
   loading = false,  // New loading prop
+  style,  // Accept custom style
 }) => {
   return (
     <Pressable
@@ -15,7 +16,8 @@ const CustomButton = ({
       style={[
         styles.container,
         styles[`container_${type}`],
-        bgColor ? { backgroundColor: bgColor } : {}
+        bgColor ? { backgroundColor: bgColor } : {},
+        style  // Apply custom style
       ]}
     >
       {loading ? (

@@ -1,6 +1,11 @@
 import jwt from "jsonwebtoken";
 import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 import User from "../models/user.js";
+import { expressjwt } from 'express-jwt';
+
+export const requireSignIn =expressjwt ({
+    secret: process.env.JWT_SECRET, algorithms: ["HS256"] 
+});
 
 const userController =async (req,res) =>{
 
@@ -98,6 +103,42 @@ export const loginController = async(req,res) =>{
             message: "Internal Server Error"
         })
         
+    }
+}
+
+export const updateUserController = async(req,res) =>{
+
+    try {
+        const {name,password,username} = req.body;
+        const user = await User.findOne({username});
+
+
+        if(password && password.length < 6){
+            return res.status(400).send({
+                success: false,
+                message: "Password is Required and should be atleast 6 characters long"
+            })
+        }
+        const hashedPassword = password ? await hashPassword(password) : undefined;
+
+        const updatedUser = await User.findOneAndUpdate({username},{
+            name: name || user.name,
+            password: hashedPassword || user.password
+        },{new:true});
+        updatedUser.password = undefined;
+        res.status(200).send({
+            success: true,
+            message: "User Updated Successfully",
+            updatedUser,
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Error in User update API",
+            error
+        })
     }
 }
 
