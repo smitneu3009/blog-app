@@ -12,6 +12,7 @@ const AuthenticatedTabs = () => {
     <Tab.Navigator tabBar={props => <FooterMenu {...props} />} screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Post" component={Post} />
+      <Tab.Screen name="MyPosts" component={Post} />
       <Tab.Screen name="Account" component={Account} />
     </Tab.Navigator>
   );

@@ -29,7 +29,21 @@ const FooterMenu = ({ state, descriptors, navigation }) => {
           });
         };
 
-        const iconName = route.name === 'Home' ? 'home' : route.name === 'Post' ? 'plus-square' : 'user';
+        let iconName;
+        switch (route.name) {
+          case 'Home':
+            iconName = 'home';
+            break;
+          case 'Post':
+            iconName = 'plus-square';
+            break;
+          case 'MyPosts':
+            iconName = 'file-text';
+            break;
+          default:
+            iconName = 'user';
+            break;
+        }
 
         return (
           <TouchableOpacity
@@ -67,6 +81,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     marginBottom: 24, // Adjust marginBottom as needed
+    marginLeft: 17,
   },
   iconStyle: {
     fontSize: 23,
