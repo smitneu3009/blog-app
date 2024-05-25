@@ -9,7 +9,7 @@ const AuthProvider = ({children}) =>{
         user:null,
         token:'',
     });
-
+axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
     axios.defaults.baseURL = "http://10.0.0.35:8080/api/v1";
 
     useEffect(()=>{

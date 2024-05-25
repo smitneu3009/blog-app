@@ -5,6 +5,7 @@ import colors from 'colors';
 import morgan from 'morgan';
 import connection from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.use('/api/v1/auth',userRoutes);
+app.use('/api/v1/post',postRoutes);
 
 app.get('', (req, res) => {
     res.status(200).json({
