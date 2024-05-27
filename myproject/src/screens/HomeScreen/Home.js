@@ -1,11 +1,13 @@
-import { View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet, ScrollView} from 'react-native';
 import React, { useContext } from 'react';
 import { AuthContext } from '../../../context/authContext';
-import FooterMenu from '../../components/Menus/FooterMenu';
 import Headermenu from '../../components/Menus/Headermenu';
+import { postContext } from '../../../context/postContext';
+import PostCard from '../../components/Post/PostCard';
 
 const Home = () => {
   const [state] = useContext(AuthContext);
+  const[posts] = useContext(postContext);
   const UserName = state?.user?.name;
 
   return (
@@ -14,6 +16,11 @@ const Home = () => {
         <Text style={styles.headerText}>Welcome, {UserName}</Text>
         <Headermenu style={styles.headerMenu} />
       </View>
+      <ScrollView>
+      <View style={styles.posts}>
+        <PostCard posts={posts}/>
+      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -43,6 +50,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     alignSelf: 'center',
   },
+  posts:{
+    padding: 14,
+    
+  }
 });
 
 export default Home;
