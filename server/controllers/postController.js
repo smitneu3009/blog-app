@@ -1,9 +1,9 @@
 import Post from "../models/post.js";
 import User from "../models/user.js";
 
-export const createPostController = async(req, res) => {
+export const createPostController = async (req, res) => {
     try {
-        const { title, description,categories } = req.body;
+        const { title, description, categories } = req.body;
         if (!title) {
             return res.status(400).json({
                 success: false,
@@ -16,13 +16,14 @@ export const createPostController = async(req, res) => {
                 message: "Description is Required"
             });
         }
-        if(!categories){
+        if (!categories) {
             return res.status(400).json({
                 success: false,
                 message: "Categories is Required"
             });
         }
-        const post = await Post({
+
+        const post = await new Post({
             title,
             description,
             categories,
@@ -37,6 +38,13 @@ export const createPostController = async(req, res) => {
 
     } catch (error) {
         console.log(error);
+        if (error.code === 11000) {
+            // Duplicate key error
+            return res.status(400).json({
+                success: false,
+                message: "Title is already used"
+            });
+        }
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"
