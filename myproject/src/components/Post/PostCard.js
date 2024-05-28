@@ -32,7 +32,7 @@ const PostCard = ({ posts }) => {
           <Text style={styles.title}>{post?.title}</Text>
           <Text style={styles.description}>{post?.description}</Text>
           <View style={styles.footer}>
-            <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>
+            {post?.postedBy?.name && (<Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>)}
             {/* <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text> */}
             <Text style={styles.createdAt}>{formatTimeAgo(post?.createdDate)}</Text>
           </View>
@@ -44,7 +44,9 @@ const PostCard = ({ posts }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
     backgroundColor: '#f5f5f5',
   },
   card: {
