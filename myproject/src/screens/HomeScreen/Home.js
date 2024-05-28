@@ -11,15 +11,18 @@ const Home = () => {
   const [posts, setPosts] = useContext(postContext);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showBanner, setShowBanner] = useState(false); // State to manage banner visibility
+  const [showBanner, setShowBanner] = useState(false);
+  const [latestPostTime, setLatestPostTime] = useState(null); // Track the time of the latest post
   const UserName = state?.user?.name;
 
-  // Fetch posts function
   const fetchPosts = async () => {
     try {
       setLoading(true);
       const { data } = await axios.get('/post/get-all-posts');
       setPosts(data.posts);
+      if (data.posts.length > 0) {
+        setLatestPostTime(new Date(data.posts[0].createdDate).getTime());
+      }
       setLoading(false);
     } catch (error) {
       console.error('API call failed: ', error);
@@ -27,33 +30,46 @@ const Home = () => {
     }
   };
 
-  // Use effect to fetch posts when component mounts
   useEffect(() => {
     fetchPosts();
+    const intervalId = setInterval(checkForNewPosts, 120000); // Poll every 60 seconds
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
 
-  // Handle pull-to-refresh
+  const checkForNewPosts = async () => {
+    try {
+      const { data } = await axios.get('/post/get-latest-post-time');
+      const newPostTime = new Date(data.latestPostTime).getTime();
+      if (latestPostTime && newPostTime > latestPostTime) {
+        setShowBanner(true);
+      }
+    } catch (error) {
+      console.error('Error checking for new posts: ', error);
+    }
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchPosts();
     setRefreshing(false);
   };
 
-  // Function to handle banner click and refresh page
   const handleBannerClick = () => {
-    setShowBanner(false); // Hide banner
-    fetchPosts(); // Refresh posts
+    setShowBanner(false);
+    fetchPosts();
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Welcome, {UserName}</Text>
+        <Text style={styles.headerText}>
+          <Text style={styles.welcomeText}>Welcome,</Text> {UserName}
+        </Text>
         <Headermenu style={styles.headerMenu} />
       </View>
       {showBanner && (
         <TouchableOpacity onPress={handleBannerClick} style={styles.banner}>
-          <Text style={styles.bannerText}>New post uploaded! Click here to refresh.</Text>
+          <Text style={styles.bannerText}>New posts</Text>
         </TouchableOpacity>
       )}
       {loading && !refreshing ? (
@@ -95,6 +111,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  welcomeText: {
+    color: '#f77f00',
+  },
   headerMenu: {
     alignSelf: 'flex-end',
   },
@@ -111,12 +130,12 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   banner: {
-    backgroundColor: '#FFD700', // Banner background color (use any trending color)
+    backgroundColor: '#f77f00',
     paddingVertical: 10,
     alignItems: 'center',
   },
   bannerText: {
-    color: '#fff', // Banner text color
+    color: 'black',
     fontWeight: 'bold',
   },
 });

@@ -21,7 +21,8 @@ const Account = () => {
         username,
       });
       setLoading(false);
-      setState({ ...state, user: data?.updatedUser });
+      let UD = JSON.stringify(data);
+      setState({ ...state, user: UD?.updatedUser });
       Alert.alert(data.message);
     } catch (error) {
       console.log("API call failed: ", error);

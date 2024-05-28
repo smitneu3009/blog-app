@@ -88,3 +88,26 @@ export const getUserPostsController = async (req, res) => {
         });
     }
 }
+
+export const getLatestPostTimeController = async (req, res) => {
+    try {
+        const latestPost = await Post.findOne().sort({ createdDate: -1 }).select('createdDate');
+        if (latestPost) {
+            res.status(200).send({
+                success: true,
+                latestPostTime: latestPost.createdDate
+            });
+        } else {
+            res.status(200).send({
+                success: true,
+                latestPostTime: null
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
