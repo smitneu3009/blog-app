@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../../../context/authContext';
 import Headermenu from '../../components/Menus/Headermenu';
 import { postContext } from '../../../context/postContext';
@@ -32,14 +32,16 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-    const intervalId = setInterval(checkForNewPosts, 120000); // Poll every 60 seconds
+    const intervalId = setInterval(checkForNewPosts, 60000); // Poll every 60 seconds
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
-  }, []);
+  }, [latestPostTime]);
 
   const checkForNewPosts = async () => {
     try {
       const { data } = await axios.get('/post/get-latest-post-time');
       const newPostTime = new Date(data.latestPostTime).getTime();
+      console.log('Latest post time from server:', newPostTime);
+      console.log('Current latest post time:', latestPostTime);
       if (latestPostTime && newPostTime > latestPostTime) {
         setShowBanner(true);
       }
@@ -69,7 +71,7 @@ const Home = () => {
       </View>
       {showBanner && (
         <TouchableOpacity onPress={handleBannerClick} style={styles.banner}>
-          <Text style={styles.bannerText}>New posts</Text>
+          <Text style={styles.bannerText}>New posts!</Text>
         </TouchableOpacity>
       )}
       {loading && !refreshing ? (
@@ -135,7 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bannerText: {
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
   },
 });
