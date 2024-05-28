@@ -51,3 +51,40 @@ export const createPostController = async (req, res) => {
         });
     }
 };
+
+export const getPostsController =  async(req, res) => {
+    try {
+        const posts = await Post.find().populate("postedBy", "_id name")
+        .sort({ createdDate: -1 });
+        res.status(200).send({
+            success: true,
+            message: "Posts Fetched Successfully",
+            posts
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+export const getUserPostsController = async (req, res) => {
+    try {
+        const userPosts = await Post.find({postedBy: req.auth._id})
+        .sort({ createdDate: -1 });
+        res.status(200).send({
+            success: true,
+            message: "User Posts Fetched Successfully",
+            userPosts
+        });
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}

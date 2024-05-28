@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TextInput, ScrollView, Alert } from "react-native";
 import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, ScrollView, Alert } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import axios from "axios";
@@ -32,8 +32,8 @@ const Post = ({ navigation }) => {
       });
       setLoading(false);
       Alert.alert("Success", data?.message);
-      setTitle(""); 
-      setDescription(""); 
+      setTitle("");
+      setDescription("");
       setCategory("");
       navigation.navigate("Home");
     } catch (error) {
@@ -52,40 +52,38 @@ const Post = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={{ alignItems: "center" }}>
-          <Text style={styles.heading}>Create a post</Text>
-          <TextInput
-            style={styles.titleInput}
-            placeholder="Enter a title"
-            value={title}
-            onChangeText={(text) => setTitle(text)}
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.heading}>Create a post</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter a title"
+          value={title}
+          onChangeText={(text) => setTitle(text)}
+        />
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          placeholder="Enter a description"
+          multiline={true}
+          numberOfLines={6}
+          value={description}
+          onChangeText={(text) => setDescription(text)}
+        />
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            onValueChange={(value) => setCategory(value)}
+            items={[
+              { label: "Medical", value: "Medical" },
+              { label: "Shelter", value: "Shelter" },
+              { label: "Community Center", value: "Community center" },
+              { label: "Education", value: "Education" },
+            ]}
+            placeholder={{ label: "Select a Category", value: null }}
+            style={pickerSelectStyles}
+            value={category} // Bind picker to category state
           />
-          <TextInput
-            style={styles.descriptionInput}
-            placeholder="Enter a description"
-            multiline={true}
-            numberOfLines={6}
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-          />
-          <View style={styles.pickerContainer}>
-            <RNPickerSelect
-              onValueChange={(value) => setCategory(value)}
-              items={[
-                { label: "Medical", value: "Medical" },
-                { label: "Shelter", value: "Shelter" },
-                { label: "Community Center", value: "Community center" },
-                { label: "Education", value: "Education" },
-              ]}
-              placeholder={{ label: "Select a Category", value: null }}
-              style={pickerSelectStyles}
-              value={category} // Bind picker to category state
-            />
-          </View>
         </View>
-        <View style={{ alignItems: "center", marginTop: 20 }}>
+        <View style={styles.buttonContainer}>
           <CustomButton
             style={styles.customButtonStyle}
             text={loading ? "Please Wait" : "Create Post"}
@@ -93,49 +91,46 @@ const Post = ({ navigation }) => {
             onPress={handlePost}
           />
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between",
-    marginTop: 80,
-    bottom: 0,
+    marginTop: 40,
+    backgroundColor: '#f5f5f5',
+  },
+  content: {
+    padding: 20,
   },
   heading: {
-    color: "black",
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 20,
+    marginTop: 25,
   },
-  titleInput: {
-    width: 360,
-    height: 40, // Default height for title
+  input: {
+    height: 40,
     backgroundColor: "#ffffff",
     borderRadius: 10,
-    marginTop: 20,
     paddingLeft: 10,
+    marginBottom: 20,
   },
-  descriptionInput: {
-    width: 360,
-    height: 150, // Height to fit approximately six lines
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
-    marginTop: 20,
-    paddingLeft: 10,
-    textAlignVertical: "top",
+  textArea: {
+    height: 150,
     paddingTop: 10,
+    textAlignVertical: "top",
   },
   pickerContainer: {
-    width: 360,
-    marginTop: 20,
-    alignItems: "center", // Center horizontally
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    alignItems: "center",
   },
   customButtonStyle: {
     width: 110,
-    marginTop: 30,
   },
 });
 
