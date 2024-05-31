@@ -70,7 +70,9 @@ const MyPosts = () => {
                     <Text style={styles.totalPosts}>Total Posts: {posts.length}</Text>
                     <View style={styles.posts}>
                         {posts.length > 0 ? (
-                            posts.map((post, index) => <PostCard key={index} posts={[post]} myPostScreen={true}/>)
+                            posts.map((post, index) => (
+                                <PostCard key={index} posts={[post]} setPosts={setPosts} myPostScreen={true}/>
+                            ))
                         ) : (
                             <Text style={styles.noPosts}>No posts available</Text>
                         )}
