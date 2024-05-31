@@ -1,8 +1,12 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
-import React, { useState } from "react";
+import { View, Text, StyleSheet, Alert, Animated, LayoutAnimation, UIManager, Platform } from "react-native";
+import React, { useRef } from "react";
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import axios from "axios";
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const formatTimeAgo = (date) => {
   const now = moment();
@@ -26,50 +30,62 @@ const formatTimeAgo = (date) => {
   }
 };
 
-const PostCard = ({ posts,myPostScreen }) => {
+const PostCard = ({ posts, setPosts, myPostScreen }) => {
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
-  const [loading, setLoading] = useState(false);
-
-  const handleDeletePropmt = (id) =>{
-    Alert.alert("Delete Post","Are you sure you want to delete this post?",[{
-      text:"Cancel",
-      onPress:()=>{},
-    }
-    ,{
-      text:"Delete",
-      onPress:()=>handleDeletePost(id),
-    }
-  ])
-  }
+  const handleDeletePrompt = (id) => {
+    Alert.alert("Delete Post", "Are you sure you want to delete this post?", [
+      {
+        text: "Cancel",
+        onPress: () => {},
+      },
+      {
+        text: "Delete",
+        onPress: () => handleDeletePost(id),
+      }
+    ]);
+  };
 
   const handleDeletePost = async (id) => {
     try {
-      setLoading(true);
-      const { data } = await axios.delete(`/post/delete-post/${id}`);
-      setLoading(false);
-      Alert.alert("Post deleted", data.message);
+      Animated.timing(slideAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(async () => {
+        const { data } = await axios.delete(`/post/delete-post/${id}`);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+        slideAnim.setValue(0);  // Reset the animation value for future deletions
+      });
     } catch (error) {
-      setLoading(false);
       console.log("API call failed: ", error);
     }
-  }
+  };
+
+  const slideLeft = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -500], // Slide out far enough to be out of view
+  });
+
   return (
     <View style={styles.container}>
       {posts?.map((post, i) => (
-        <View key={i} style={styles.card}>
+        <Animated.View key={i} style={[styles.card, { transform: [{ translateX: slideLeft }] }]}>
           <Text style={styles.title}>{post?.title}</Text>
           <Text style={styles.description}>{post?.description}</Text>
           <View style={styles.footer}>
-            {post?.postedBy?.name && (<Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>)}
-            {/* <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text> */}
+            {post?.postedBy?.name && (
+              <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>
+            )}
             <Text style={styles.createdAt}>{formatTimeAgo(post?.createdDate)}</Text>
             {myPostScreen && (
               <Text>
-                <FontAwesome name="trash" size={20} color="#f77f00" onPress={() => handleDeletePropmt(post?._id) }/>
+                <FontAwesome name="trash" size={20} color="#f77f00" onPress={() => handleDeletePrompt(post?._id)} />
               </Text>
             )}
           </View>
-        </View>
+        </Animated.View>
       ))}
     </View>
   );
