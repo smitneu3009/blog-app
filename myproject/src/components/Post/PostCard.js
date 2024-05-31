@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, Alert } from "react-native";
+import React, { useState } from "react";
 import moment from 'moment';
+import { FontAwesome } from '@expo/vector-icons';
+import axios from "axios";
 
 const formatTimeAgo = (date) => {
   const now = moment();
@@ -24,7 +26,33 @@ const formatTimeAgo = (date) => {
   }
 };
 
-const PostCard = ({ posts }) => {
+const PostCard = ({ posts,myPostScreen }) => {
+
+  const [loading, setLoading] = useState(false);
+
+  const handleDeletePropmt = (id) =>{
+    Alert.alert("Delete Post","Are you sure you want to delete this post?",[{
+      text:"Cancel",
+      onPress:()=>{},
+    }
+    ,{
+      text:"Delete",
+      onPress:()=>handleDeletePost(id),
+    }
+  ])
+  }
+
+  const handleDeletePost = async (id) => {
+    try {
+      setLoading(true);
+      const { data } = await axios.delete(`/post/delete-post/${id}`);
+      setLoading(false);
+      Alert.alert("Post deleted", data.message);
+    } catch (error) {
+      setLoading(false);
+      console.log("API call failed: ", error);
+    }
+  }
   return (
     <View style={styles.container}>
       {posts?.map((post, i) => (
@@ -35,6 +63,11 @@ const PostCard = ({ posts }) => {
             {post?.postedBy?.name && (<Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>)}
             {/* <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text> */}
             <Text style={styles.createdAt}>{formatTimeAgo(post?.createdDate)}</Text>
+            {myPostScreen && (
+              <Text>
+                <FontAwesome name="trash" size={20} color="#f77f00" onPress={() => handleDeletePropmt(post?._id) }/>
+              </Text>
+            )}
           </View>
         </View>
       ))}

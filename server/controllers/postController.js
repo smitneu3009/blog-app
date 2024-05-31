@@ -89,6 +89,23 @@ export const getUserPostsController = async (req, res) => {
     }
 }
 
+export const deletePostController = async (req, res) => {
+    try {
+        const {id} = req.params
+        await Post.findByIdAndDelete({_id:id});
+        res.status(200).send({
+            success: true,
+            message: "Post Deleted Successfully"
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
 export const getLatestPostTimeController = async (req, res) => {
     try {
         const latestPost = await Post.findOne().sort({ createdDate: -1 }).select('createdDate');
