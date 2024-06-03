@@ -1,18 +1,18 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../../../context/authContext';
 import Headermenu from '../../components/Menus/Headermenu';
 import { postContext } from '../../../context/postContext';
 import PostCard from '../../components/Post/PostCard';
 import axios from 'axios';
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const [state] = useContext(AuthContext);
   const [posts, setPosts] = useContext(postContext);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
-  const [latestPostTime, setLatestPostTime] = useState(null); // Track the time of the latest post
+  const [latestPostTime, setLatestPostTime] = useState(null);
   const UserName = state?.user?.name;
 
   const fetchPosts = async () => {
@@ -32,16 +32,14 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-    const intervalId = setInterval(checkForNewPosts, 60000); // Poll every 60 seconds
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    const intervalId = setInterval(checkForNewPosts, 60000);
+    return () => clearInterval(intervalId);
   }, [latestPostTime]);
 
   const checkForNewPosts = async () => {
     try {
       const { data } = await axios.get('/post/get-latest-post-time');
       const newPostTime = new Date(data.latestPostTime).getTime();
-      console.log('Latest post time from server:', newPostTime);
-      console.log('Current latest post time:', latestPostTime);
       if (latestPostTime && newPostTime > latestPostTime) {
         setShowBanner(true);
       }
