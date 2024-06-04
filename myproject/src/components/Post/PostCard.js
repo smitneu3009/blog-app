@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert, Animated, LayoutAnimation, UIManager, Platform } from "react-native";
+import { View, Text, StyleSheet, Alert, Animated, LayoutAnimation, UIManager, Platform, TouchableOpacity } from "react-native";
 import React, { useRef } from "react";
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
@@ -30,7 +30,7 @@ const formatTimeAgo = (date) => {
   }
 };
 
-const PostCard = ({ posts, setPosts, myPostScreen }) => {
+const PostCard = ({ posts, setPosts, myPostScreen, navigation }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
   const handleDeletePrompt = (id) => {
@@ -71,21 +71,23 @@ const PostCard = ({ posts, setPosts, myPostScreen }) => {
   return (
     <View style={styles.container}>
       {posts?.map((post, i) => (
-        <Animated.View key={i} style={[styles.card, { transform: [{ translateX: slideLeft }] }]}>
-          <Text style={styles.title}>{post?.title}</Text>
-          <Text style={styles.description}>{post?.description}</Text>
-          <View style={styles.footer}>
-            {post?.postedBy?.name && (
-              <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>
-            )}
-            <Text style={styles.createdAt}>{formatTimeAgo(post?.createdDate)}</Text>
-            {myPostScreen && (
-              <Text>
-                <FontAwesome name="trash" size={20} color="#f77f00" onPress={() => handleDeletePrompt(post?._id)} />
-              </Text>
-            )}
-          </View>
-        </Animated.View>
+        <TouchableOpacity key={i} onPress={() => navigation.navigate('PostDetails', { post })}>
+          <Animated.View style={[styles.card, { transform: [{ translateX: slideLeft }] }]}>
+            <Text style={styles.title}>{post?.title}</Text>
+            <Text style={styles.description}>{post?.description}</Text>
+            <View style={styles.footer}>
+              {post?.postedBy?.name && (
+                <Text style={styles.postedBy}>Posted By: {post?.postedBy?.name}</Text>
+              )}
+              <Text style={styles.createdAt}>{formatTimeAgo(post?.createdDate)}</Text>
+              {myPostScreen && (
+                <Text>
+                  <FontAwesome name="trash" size={20} color="#f77f00" onPress={() => handleDeletePrompt(post?._id)} />
+                </Text>
+              )}
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
       ))}
     </View>
   );
