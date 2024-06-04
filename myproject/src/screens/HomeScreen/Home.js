@@ -81,7 +81,7 @@ const Home = ({ navigation }) => {
         >
           <View style={styles.posts}>
             {posts.length > 0 ? (
-              posts.map((post, index) => <PostCard key={index} posts={[post]} />)
+              posts.map((post, index) => <PostCard key={index} posts={[post]} navigation={navigation} />)
             ) : (
               <Text style={styles.noPosts}>No posts available</Text>
             )}
